@@ -1,0 +1,17 @@
+nav {
+  clear: both;
+  display: block;
+  ul{
+    list-style-type: none;
+
+    li {
+      float:left;
+      display: inline-block;
+    }
+  }
+}
+
+.pages {
+  clear: both;
+  display: block;
+}

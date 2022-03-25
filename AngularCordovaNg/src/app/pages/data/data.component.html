@@ -1,0 +1,16 @@
+<button mat-raised-button color="primary" (click)="this.loadData()">Load data</button>
+<mat-divider></mat-divider>
+<mat-card *ngFor="let article of articles; index as idx;"  class="article">
+  <mat-card-header class="header">
+    {{article.title}}
+  </mat-card-header>
+  <mat-card-content class="content">
+    <div>{{article.body}}</div>
+    <mat-divider inset></mat-divider>
+    <div>
+    Author: <ng-container *ngFor="let author of article.authors; index as idx;">
+    <ng-container *ngIf="idx > 1">, </ng-container>
+    {{author.name}}</ng-container>
+    </div>
+  </mat-card-content>
+</mat-card>
