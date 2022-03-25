@@ -15,7 +15,7 @@ cd into each subfolder and run **npm install**
 To run app:
 ```
 cd AngularCordovaNg 
-ng build  #to build app which willk build app in AngularCordova/www folder 
+ng build  #to build app which will build app in AngularCordova/www folder 
 cd ../AngularCordova
 cordova run android 
 #or
