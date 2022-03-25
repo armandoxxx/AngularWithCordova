@@ -6,12 +6,14 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+
   title = 'AngularCordovaNg';
 
 
   constructor(private cdRef: ChangeDetectorRef){
 
   }
+
 
   ngOnInit(): void {
     this.initPush();
