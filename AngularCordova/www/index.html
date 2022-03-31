@@ -3,9 +3,16 @@
 <head>
   <meta charset="utf-8">
   <title>AngularCordovaNg</title>
-  <base href="/">
+  <base href=".">
+      <meta http-equiv="Content-Security-Policy" content="
+                                  default-src * data: blob: ws: wss: gap://ready file://*;
+                                  style-src * 'unsafe-inline';
+                                  script-src * 'unsafe-inline' 'unsafe-eval';
+                                  connect-src * ws: wss:;">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script type="text/javascript" src="cordova.js"></script>
+  
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&amp;display=swap" rel="stylesheet">
@@ -13,5 +20,9 @@
 <link rel="stylesheet" href="styles.ccb9a5cc7d55d668.css"></head>
 <body class="mat-typography">
   <app-root></app-root>
-<script src="runtime.632994c8c5ba56f5.js" type="module"></script><script src="polyfills.38385b708baf9e0b.js" type="module"></script><script src="vendor.5d698f9d2ea8b94f.js" type="module"></script><script src="main.ea2c3b7767b834e1.js" type="module"></script></body>
+  <script src="runtime.632994c8c5ba56f5.js" type="module"></script>
+  <script src="polyfills.38385b708baf9e0b.js" type="module"></script>
+  <script src="vendor.5d698f9d2ea8b94f.js" type="module"></script>
+  <script src="main.33544e17a6e6d7fd.js" type="module"></script>
+</body>
 </html>
