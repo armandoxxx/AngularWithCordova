@@ -13,5 +13,9 @@
     <platform name="ios">
             <allow-intent href="itms:*" />
             <allow-intent href="itms-apps:*" />
+            <preference name="AllowUntrustedCerts"  value="true" />
+            <preference name="InterceptRemoteRequests" value="all" />
+            <preference name="allowFileAccessFromFileURLs" value="true" />
+            <preference name="allowUniversalAccessFromFileURLs" value="true" />
         </platform>
 </widget>
