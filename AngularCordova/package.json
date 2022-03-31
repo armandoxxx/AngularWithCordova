@@ -33,8 +33,7 @@
       "@havesource/cordova-plugin-push": {
         "ANDROIDX_CORE_VERSION": "1.6.+",
         "FCM_VERSION": "18.+"
-      },
-      "cordova-plugin-wkwebviewxhrfix": {}
+      }
     }
   }
 }
