@@ -11,13 +11,15 @@ import { DataComponent } from './pages/data/data.component';
 import { NotifyComponent } from './pages/notify/notify.component';
 import {MatDividerModule} from "@angular/material/divider";
 import {HttpClientModule} from "@angular/common/http";
+import { LayoutComponent } from './pages/layout/layout.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CameraComponent,
     DataComponent,
-    NotifyComponent
+    NotifyComponent,
+    LayoutComponent
   ],
   imports: [
     HttpClientModule,
