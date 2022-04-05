@@ -62,6 +62,7 @@ class AppComponent {
         this.initPush();
     }
     initPush() {
+        console.log('Initializing push plugin.');
         let config = {
             android: {
                 vibrate: true,
@@ -535,4 +536,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.b6ab7f87d11a09b7.js.map
+//# sourceMappingURL=main.f163f4bb3fe78c0b.js.map
