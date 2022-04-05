@@ -39,6 +39,7 @@ export class AppComponent implements OnInit {
             me.messages.push("Subscribed to user_topic");
           console.log("Subscribed to user_topic");},
           () => {
+            me.messages.push("cannot subscribe to user_topic");
           console.log("cannot subscribe");
           });
         push.on(
