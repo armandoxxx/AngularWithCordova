@@ -25,7 +25,8 @@
   "cordova": {
     "platforms": [
       "android",
-      "browser"
+      "browser",
+      "ios"
     ],
     "plugins": {
       "cordova-plugin-file": {},
