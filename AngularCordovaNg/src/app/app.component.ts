@@ -28,6 +28,7 @@ export class AppComponent implements OnInit {
         clearNotifications: true
       },
       ios: {
+        fcmSandbox: true,
         alert: true,
         badge: true,
         sound: true
