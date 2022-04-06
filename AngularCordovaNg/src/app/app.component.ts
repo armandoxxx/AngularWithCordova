@@ -8,7 +8,6 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 export class AppComponent implements OnInit {
 
   title = 'AngularCordovaNg';
-  messages: string[] = [];
 
   constructor(private cdRef: ChangeDetectorRef){
 
@@ -35,24 +34,18 @@ export class AppComponent implements OnInit {
       }
     }
 
-    this.messages.push("Initializing push plugin.");
     let push  = PushNotification.init(config);
-    let me = this;
     PushNotification.hasPermission(
       () => {
-        me.messages.push("Notification permission granted");
       console.log("Notification permission granted");
         push.subscribe("user_topic", () => {
-            me.messages.push("Subscribed to user_topic");
           console.log("Subscribed to user_topic");},
           () => {
-            me.messages.push("cannot subscribe to user_topic");
           console.log("cannot subscribe");
           });
         push.on(
         'notification',
         (data: any) => {
-          me.messages.push("user topic notified");
           console.log(data);
         });
         push.on(
