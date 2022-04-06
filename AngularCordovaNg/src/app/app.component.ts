@@ -26,8 +26,14 @@ export class AppComponent implements OnInit {
       android: {
         vibrate: true,
         clearNotifications: true
+      },
+      ios: {
+        alert: true,
+        badge: true,
+        sound: true
       }
     }
+
     this.messages.push("Initializing push plugin.");
     let push  = PushNotification.init(config);
     let me = this;
