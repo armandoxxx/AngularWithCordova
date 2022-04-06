@@ -22,3 +22,26 @@ cordova run android
 cordova run browser 
 ```
 
+##IOS
+
+run **cordova platforms add ios**
+run **cordova prepare ios**
+
+do not forget to set settings in XCode for signing dev app (select team and enter bundle identifier-you have to create in your account  in developer.apple.com)    
+  
+run **cordova build ios**
+
+###troubleshooting 
+
+if you run into problem with blank page when app is loaded then do this (usualy access-allow-origin stuff)   
+
+```
+Search the code for the following line: (might be in several files, so do it for all of them) WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+
+And add the following two lines after it:
+
+[configuration.preferences setValue:@TRUE forKey:@"allowFileAccessFromFileURLs"];
+[configuration setValue:@"TRUE" forKey:@"allowUniversalAccessFromFileURLs"];
+```
+
+
