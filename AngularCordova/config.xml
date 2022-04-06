@@ -10,7 +10,11 @@
     <allow-navigation href="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
+    <platform name="android">
+        <resource-file src="google-services.json" target="/app/google-services.json" />
+    </platform>
     <platform name="ios">
+        <resource-file src="GoogleService-Info.plist" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
         <preference name="AllowUntrustedCerts"  value="true" />
