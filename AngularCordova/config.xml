@@ -11,11 +11,20 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <platform name="ios">
-            <allow-intent href="itms:*" />
-            <allow-intent href="itms-apps:*" />
-            <preference name="AllowUntrustedCerts"  value="true" />
-            <preference name="InterceptRemoteRequests" value="all" />
-            <preference name="allowFileAccessFromFileURLs" value="true" />
-            <preference name="allowUniversalAccessFromFileURLs" value="true" />
-        </platform>
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+        <preference name="AllowUntrustedCerts"  value="true" />
+        <preference name="InterceptRemoteRequests" value="all" />
+        <preference name="allowFileAccessFromFileURLs" value="true" />
+        <preference name="allowUniversalAccessFromFileURLs" value="true" />
+        <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
+            <string>need camera access to take pictures</string>
+        </edit-config>
+        <edit-config target="NSPhotoLibraryUsageDescription" file="*-Info.plist" mode="merge">
+            <string>need photo library access to get pictures from there</string>
+        </edit-config>
+        <edit-config target="NSPhotoLibraryAddUsageDescription" file="*-Info.plist" mode="merge">
+            <string>need photo library access to save pictures there</string>
+        </edit-config>
+    </platform>
 </widget>

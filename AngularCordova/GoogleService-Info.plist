@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1079642262479-dpocedsfmefjb9ss0vomglnka4k7rtq7.apps.googleusercontent.com</string>
+	<string>1079642262479-1h73b3df3hk3llb2qr4etpkt6t24lt7k.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1079642262479-dpocedsfmefjb9ss0vomglnka4k7rtq7</string>
+	<string>com.googleusercontent.apps.1079642262479-1h73b3df3hk3llb2qr4etpkt6t24lt7k</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1079642262479-i2a8qboeub92nh5mgbmisgq8at353r2q.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyChVFkh5ufLxamt4B9iCxUIHPCqBOKiADE</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>io.cordova.hellocordova</string>
+	<string>helocordovaxxx.cordova.io</string>
 	<key>PROJECT_ID</key>
 	<string>testnotifications-4233a</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1079642262479:ios:acb6e0391bf6aec57520ba</string>
+	<string>1:1079642262479:ios:90ec061f9e52d3117520ba</string>
 </dict>
 </plist>
