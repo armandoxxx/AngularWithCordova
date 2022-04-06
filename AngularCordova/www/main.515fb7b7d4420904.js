@@ -79,6 +79,11 @@ class AppComponent {
             android: {
                 vibrate: true,
                 clearNotifications: true
+            },
+            ios: {
+                alert: true,
+                badge: true,
+                sound: true
             }
         };
         this.messages.push("Initializing push plugin.");
@@ -91,6 +96,7 @@ class AppComponent {
                 me.messages.push("Subscribed to user_topic");
                 console.log("Subscribed to user_topic");
             }, () => {
+                me.messages.push("cannot subscribe to user_topic");
                 console.log("cannot subscribe");
             });
             push.on('notification', (data) => {
@@ -561,4 +567,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.c24bb32936c25608.js.map
+//# sourceMappingURL=main.515fb7b7d4420904.js.map
