@@ -12893,17 +12893,23 @@ class LiveAnnouncer {
 
 
     return this._ngZone.runOutsideAngular(() => {
-      return new Promise(resolve => {
-        clearTimeout(this._previousTimeout);
-        this._previousTimeout = setTimeout(() => {
-          this._liveElement.textContent = message;
-          resolve();
+      if (!this._currentPromise) {
+        this._currentPromise = new Promise(resolve => this._currentResolve = resolve);
+      }
 
-          if (typeof duration === 'number') {
-            this._previousTimeout = setTimeout(() => this.clear(), duration);
-          }
-        }, 100);
-      });
+      clearTimeout(this._previousTimeout);
+      this._previousTimeout = setTimeout(() => {
+        this._liveElement.textContent = message;
+
+        if (typeof duration === 'number') {
+          this._previousTimeout = setTimeout(() => this.clear(), duration);
+        }
+
+        this._currentResolve();
+
+        this._currentPromise = this._currentResolve = undefined;
+      }, 100);
+      return this._currentPromise;
     });
   }
   /**
@@ -12920,11 +12926,13 @@ class LiveAnnouncer {
   }
 
   ngOnDestroy() {
-    var _a;
+    var _a, _b;
 
     clearTimeout(this._previousTimeout);
     (_a = this._liveElement) === null || _a === void 0 ? void 0 : _a.remove();
     this._liveElement = null;
+    (_b = this._currentResolve) === null || _b === void 0 ? void 0 : _b.call(this);
+    this._currentPromise = this._currentResolve = undefined;
   }
 
   _createLiveElement() {
@@ -14125,7 +14133,7 @@ __webpack_require__.r(__webpack_exports__);
  * found in the LICENSE file at https://angular.io/license
  */
 /** Current version of the Angular Component Development Kit. */
-const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Version('13.3.1');
+const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Version('13.3.2');
 
 /**
  * @license
@@ -55422,7 +55430,7 @@ function MatOption_span_3_Template(rf, ctx) {
 }
 
 const _c2 = ["*"];
-const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Version('13.3.1');
+const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Version('13.3.2');
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -69154,4 +69162,4 @@ const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Version('13.1.3')
 /***/ })
 
 }]);
-//# sourceMappingURL=vendor.81f620fb9c43d2d5.js.map
+//# sourceMappingURL=vendor.9ae27c6f9aad31b7.js.map
