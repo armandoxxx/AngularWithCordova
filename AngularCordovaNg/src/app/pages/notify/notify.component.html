@@ -1,1 +1,2 @@
-<p>notify works!</p>
+<button mat-button (click)="this.subscribeTo('user_topic');" [class.hidden]="this.isSubscribed('user_topic')">Subscribe to [user_topic]</button>
+<button mat-button (click)="this.unSubscribeFrom('user_topic');" [class.hidden]="!this.isSubscribed('user_topic')">Unsubscribe from [user_topic]</button>

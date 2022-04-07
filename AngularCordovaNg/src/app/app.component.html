@@ -9,3 +9,9 @@
 <div class="pages">
   <router-outlet></router-outlet>
 </div>
+Subscribed topics:
+<ul>
+<ng-container *ngFor="let topicName of subscribedTopics">
+  <li>{{topicName}}</li>
+</ng-container>
+</ul>

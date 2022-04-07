@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {BroadcastService} from "../../services/broadcast.service";
 
 @Component({
   selector: 'app-notify',
@@ -7,9 +8,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NotifyComponent implements OnInit {
 
-  constructor() { }
+  constructor(private broadcastService: BroadcastService) { }
 
   ngOnInit(): void {
   }
 
+
+  isSubscribed(topicName: string) {
+    return true;
+  }
+
+
+  subscribeTo(topicName: string) {
+    this.broadcastService.subscribeToTopic(topicName);
+  }
+
+
+  unSubscribeFrom(topicName: string) {
+    this.broadcastService.unSubscribeFromTopic(topicName);
+  }
 }
