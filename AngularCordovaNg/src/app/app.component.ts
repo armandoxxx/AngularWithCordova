@@ -40,11 +40,6 @@ export class AppComponent implements OnInit {
     PushNotification.hasPermission(
       () => {
       console.log("Notification permission granted");
-        /*push.subscribe("user_topic", () => {
-          console.log("Subscribed to user_topic");},
-          () => {
-          console.log("cannot subscribe");
-          });*/
         push.on(
           'registration',
           (data: any) => {
