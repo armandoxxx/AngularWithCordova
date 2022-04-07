@@ -12,9 +12,10 @@ import { takeUntil } from 'rxjs/operators';
 export class AppComponent implements OnInit, OnDestroy {
 
   title = 'AngularCordovaNg';
-
-  push: any = undefined;
   subscribedTopics: string[] = [];
+
+  private push: any = undefined;
+  private eventsInitialized: boolean = false;
 
 
   private disableSubscriptions: Subject<void> = new Subject<void>();
@@ -32,6 +33,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.disableSubscriptions.next();
+    this.disableNotificationEvent();
   }
 
 
@@ -49,7 +51,7 @@ export class AppComponent implements OnInit, OnDestroy {
         sound: true
       }
     }
-    this.push  = PushNotification.init(config);
+    this.push = PushNotification.init(config);
     PushNotification.hasPermission(
       () => {
       console.log("Notification permission granted");
@@ -58,7 +60,8 @@ export class AppComponent implements OnInit, OnDestroy {
           (data: any) => {
             console.log("Got registration data: %o", data);
             console.log("will subscribe to topic: [user_topic]");
-            this.subscribeToTopic('user_topics');
+            this.subscribeToTopic('user_topic');
+            this.enableNotificationEvent();
           });
       },
       () => {
@@ -70,9 +73,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   initEvents() {
     this.broadcastService.pushSubscriptionsEvent.pipe(takeUntil(this.disableSubscriptions)).subscribe( (subscriptionData:PushSubscriptionData) => {
-      if (subscriptionData.action == 'add') {
+      if (subscriptionData.action == 'subscribe') {
         this.subscribeToTopic(subscriptionData.topicName);
-      } else if (subscriptionData.action == 'remove') {
+      } else if (subscriptionData.action == 'unsubscribe') {
         this.unSubscribeFromTopic(subscriptionData.topicName);
       }
     });
@@ -80,22 +83,38 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
   private subscribeToTopic(topicName: string): void {
+    if (this.subscribedTopics.indexOf(topicName) !== -1) {
+      console.log('Already subscribed to topic [%s]', topicName);
+      return;
+    }
     this.push.subscribe(topicName,
       () => {
-        console.log('Subscribed to [user_topic]');
-        this.enableNotificationEvent();
+        console.log('Subscribed to [%s]', topicName);
         this.addTopic(topicName);
-
       },
       () => {
-        console.log("cannot subscribe");
-        this.disableNotificationEvent();
-        this.removeTopic("user_topic");
+        console.log("cannot subscribe to [%s]", topicName);
+        this.removeTopic(topicName);
       }
     );
   }
 
+
   private unSubscribeFromTopic(topicName: string): void {
+    if (this.subscribedTopics.indexOf(topicName) === -1) {
+      console.log('Not subscribed to topic [%s]', topicName);
+      return;
+    }
+    this.push.unsubscribe(
+      topicName,
+      () => {
+        console.log('Successfully unsubscribed from topic [%s]', topicName);
+        this.removeTopic(topicName);
+      },
+      (e: any) => {
+        console.log('Cannot unsubscribe from topic [%s] error [%o]', topicName, e);
+      }
+    );
   }
 
 
@@ -110,12 +129,21 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
   private enableNotificationEvent() {
+    if (this.eventsInitialized) {
+      console.log('Events already initialized');
+      return;
+    }
     this.push.on('notification', this.onNotificationEvent);
     this.push.on('error', this.onNotificationError);
+    this.eventsInitialized = true;
   }
 
 
   private disableNotificationEvent() {
+    if (!this.eventsInitialized) {
+      console.log('Events not initialized!');
+      return;
+    }
     this.push.off('notification', this.onNotificationEvent);
     this.push.off('error', this.onNotificationError);
   }
