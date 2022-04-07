@@ -3,7 +3,6 @@ import {BroadcastService} from "./services/broadcast.service";
 import {Subject} from "rxjs";
 import {PushSubscriptionData} from "./models/push-subscription-data";
 import { takeUntil } from 'rxjs/operators';
-import PushNotification = PhonegapPluginPush.PushNotification;
 
 @Component({
   selector: 'app-root',
@@ -50,7 +49,6 @@ export class AppComponent implements OnInit, OnDestroy {
         sound: true
       }
     }
-    let me = this;
     this.push  = PushNotification.init(config);
     PushNotification.hasPermission(
       () => {
