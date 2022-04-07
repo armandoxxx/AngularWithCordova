@@ -24,15 +24,15 @@ export class AppComponent implements OnInit {
     let config = {
       android: {
         vibrate: true,
-        clearNotifications: true,
-        topics: ['user_topic']
+        clearNotifications: true
+        //,topics: ['user_topic']
       },
       ios: {
         fcmSandbox: true,
         alert: true,
         badge: true,
-        sound: true,
-        topics: ['user_topic']
+        sound: true
+        //,topics: ['user_topic']
       }
     }
 
@@ -44,6 +44,13 @@ export class AppComponent implements OnInit {
           'registration',
           (data: any) => {
             console.log("Got registration data: %o", data);
+            console.log("will subscribe to topic: [user_topic]");
+            push.subscribe("user_topic", () => {
+                console.log("Subscribed to [user_topic]");},
+              () => {
+                console.log("cannot subscribe");
+              });
+
           });
         push.on(
         'notification',
