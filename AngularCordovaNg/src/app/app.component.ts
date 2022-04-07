@@ -24,13 +24,15 @@ export class AppComponent implements OnInit {
     let config = {
       android: {
         vibrate: true,
-        clearNotifications: true
+        clearNotifications: true,
+        topics: ['user_topic']
       },
       ios: {
         fcmSandbox: true,
         alert: true,
         badge: true,
-        sound: true
+        sound: true,
+        topics: ['user_topic']
       }
     }
 
@@ -38,11 +40,11 @@ export class AppComponent implements OnInit {
     PushNotification.hasPermission(
       () => {
       console.log("Notification permission granted");
-        push.subscribe("user_topic", () => {
+        /*push.subscribe("user_topic", () => {
           console.log("Subscribed to user_topic");},
           () => {
           console.log("cannot subscribe");
-          });
+          });*/
         push.on(
           'registration',
           (data: any) => {
