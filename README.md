@@ -22,7 +22,7 @@ cordova run android
 cordova run browser 
 ```
 
-##IOS
+## IOS
 
 run **cordova platforms add ios**
 run **cordova prepare ios**
