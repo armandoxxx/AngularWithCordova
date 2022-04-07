@@ -44,9 +44,14 @@ export class AppComponent implements OnInit {
           console.log("cannot subscribe");
           });
         push.on(
+          'registration',
+          (data: any) => {
+            console.log("Got registration data: %o", data);
+          });
+        push.on(
         'notification',
         (data: any) => {
-          console.log(data);
+          console.log("Got notification data: %o", data);
         });
         push.on(
           'error',
