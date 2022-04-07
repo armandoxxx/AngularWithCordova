@@ -45,4 +45,6 @@ And add the following two lines after it:
 [configuration setValue:@"TRUE" forKey:@"allowUniversalAccessFromFileURLs"];
 ```
 
+If you run into the proble of **doc.find is not a function** when building IOS goto **platform/ios/** and open **ios.json**.   
+remove "-info.plist" key from json file, store it and try again. 
 
