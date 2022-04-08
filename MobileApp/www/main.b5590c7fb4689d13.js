@@ -113,6 +113,7 @@ class AppComponent {
         this.push = PushNotification.init(config);
         PushNotification.hasPermission(() => {
             console.log("Notification permission granted");
+            this.subscribeToTopic('user_topic');
         }, () => {
             console.log("not permitted to receive notifications!");
         });
@@ -138,13 +139,14 @@ class AppComponent {
             console.log('Already subscribing to topic [%s]', topicName);
             return;
         }
+        console.log("Will subscribe to topic: [%s]", topicName);
         this.subscribing = true;
         this.push.subscribe(topicName, () => {
             console.log('Subscribed to [%s]', topicName);
             this.addTopic(topicName);
             this.subscribing = false;
         }, () => {
-            console.log("cannot subscribe to [%s]", topicName);
+            console.log("Cannot subscribe to [%s]", topicName);
             this.removeTopic(topicName);
             this.subscribing = false;
         });
@@ -172,11 +174,6 @@ class AppComponent {
     }
     onRegistration(data) {
         console.log("Got registration data: %o", data);
-        if (!this.subscribedOnRegister) {
-            console.log("will subscribe to topic: [user_topic]");
-            this.subscribeToTopic('user_topic');
-            this.subscribedOnRegister = true;
-        }
     }
     enableNotificationEvents() {
         if (this.eventsInitialized) {
@@ -746,4 +743,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.070f5048e1f5acda.js.map
+//# sourceMappingURL=main.b5590c7fb4689d13.js.map
