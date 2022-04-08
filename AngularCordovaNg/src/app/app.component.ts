@@ -55,15 +55,13 @@ export class AppComponent implements OnInit, OnDestroy {
     let config = {
       android: {
         vibrate: true,
-        clearNotifications: true,
-        topics: ['user_topic']
+        clearNotifications: true
       },
       ios: {
         fcmSandbox: true,
         alert: true,
         badge: true,
-        sound: true,
-        topics: ['user_topic']
+        sound: true
       }
     }
     this.push = PushNotification.init(config);
@@ -99,7 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
           let me = this;
           this.topicSubscriptionInitTimer = setTimeout( () => {
             console.log('Executing timer');
-            //me.subscribeToTopic('user_topic')
+            me.subscribeToTopic('user_topic')
           }, 2000);
       }
     );
