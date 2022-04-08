@@ -113,9 +113,9 @@ class AppComponent {
             console.log("Notification permission granted");
             this.push.on('registration', (data) => {
                 console.log("Got registration data: %o", data);
-                console.log("will subscribe to topic: [user_topic]");
+                /*console.log("will subscribe to topic: [user_topic]");
                 this.subscribeToTopic('user_topic');
-                this.enableNotificationEvent();
+                this.enableNotificationEvent();*/
             });
         }, () => {
             console.log("not permitted to receive notifications!");
@@ -736,4 +736,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.51f675d732159612.js.map
+//# sourceMappingURL=main.1c24f73c0ae05f7f.js.map
