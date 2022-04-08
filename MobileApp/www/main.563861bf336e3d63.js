@@ -84,6 +84,7 @@ class AppComponent {
         //work flags
         this.eventsInitialized = false;
         this.subscribing = false;
+        this.hasNotifications = false;
         this.disableSubscriptions = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
     }
     ngOnInit() {
@@ -92,7 +93,7 @@ class AppComponent {
     }
     ngOnDestroy() {
         this.disableSubscriptions.next();
-        this.disableNotificationEvent();
+        this.disableNotificationEvents();
     }
     initPush() {
         console.log('Initializing push plugin.');
@@ -113,10 +114,10 @@ class AppComponent {
             console.log("Notification permission granted");
             console.log("will subscribe to topic: [user_topic]");
             this.subscribeToTopic('user_topic');
-            this.enableNotificationEvent();
         }, () => {
             console.log("not permitted to receive notifications!");
         });
+        this.enableNotificationEvents();
     }
     initEvents() {
         this.broadcastService.pushSubscriptionsEvent.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this.disableSubscriptions)).subscribe((subscriptionData) => {
@@ -173,7 +174,7 @@ class AppComponent {
     onRegistration(data) {
         console.log("Got registration data: %o", data);
     }
-    enableNotificationEvent() {
+    enableNotificationEvents() {
         if (this.eventsInitialized) {
             console.log('Events already initialized');
             return;
@@ -183,13 +184,16 @@ class AppComponent {
         this.push.on('error', this.onNotificationError.bind(this));
         this.eventsInitialized = true;
     }
-    disableNotificationEvent() {
+    disableNotificationEvents() {
         if (!this.eventsInitialized) {
             console.log('Events not initialized!');
             return;
         }
-        this.push.off('notification', this.onNotificationEvent);
-        this.push.off('error', this.onNotificationError);
+        this.push.off('registration', this.onRegistration.bind(this));
+        this.push.off('notification', this.onNotificationEvent.bind(this));
+        this.push.off('error', this.onNotificationError.bind(this));
+        console.log("Events disabled");
+        this.eventsInitialized = false;
     }
     addTopic(topicName) {
         this.subscribedTopics.push(topicName);
@@ -737,4 +741,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.0399e74666da6a82.js.map
+//# sourceMappingURL=main.563861bf336e3d63.js.map
