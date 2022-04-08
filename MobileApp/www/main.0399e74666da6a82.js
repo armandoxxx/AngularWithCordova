@@ -111,12 +111,9 @@ class AppComponent {
         this.push = PushNotification.init(config);
         PushNotification.hasPermission(() => {
             console.log("Notification permission granted");
-            this.push.on('registration', (data) => {
-                console.log("Got registration data: %o", data);
-                /*console.log("will subscribe to topic: [user_topic]");
-                this.subscribeToTopic('user_topic');
-                this.enableNotificationEvent();*/
-            });
+            console.log("will subscribe to topic: [user_topic]");
+            this.subscribeToTopic('user_topic');
+            this.enableNotificationEvent();
         }, () => {
             console.log("not permitted to receive notifications!");
         });
@@ -173,11 +170,15 @@ class AppComponent {
     onNotificationError(data) {
         console.log("Got notification error data: %o", data);
     }
+    onRegistration(data) {
+        console.log("Got registration data: %o", data);
+    }
     enableNotificationEvent() {
         if (this.eventsInitialized) {
             console.log('Events already initialized');
             return;
         }
+        this.push.on('registration', this.onRegistration.bind(this));
         this.push.on('notification', this.onNotificationEvent.bind(this));
         this.push.on('error', this.onNotificationError.bind(this));
         this.eventsInitialized = true;
@@ -736,4 +737,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.1c24f73c0ae05f7f.js.map
+//# sourceMappingURL=main.0399e74666da6a82.js.map
