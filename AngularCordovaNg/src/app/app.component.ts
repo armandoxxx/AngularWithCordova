@@ -21,6 +21,7 @@ export class AppComponent implements OnInit, OnDestroy {
   //work flags
   private eventsInitialized: boolean = false;
   private subscribing: boolean = false;
+  private hasNotifications: boolean = false;
 
 
   private disableSubscriptions: Subject<void> = new Subject<void>();
@@ -38,7 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.disableSubscriptions.next();
-    this.disableNotificationEvent();
+    this.disableNotificationEvents();
   }
 
 
@@ -62,13 +63,12 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log("Notification permission granted");
         console.log("will subscribe to topic: [user_topic]");
         this.subscribeToTopic('user_topic');
-        this.enableNotificationEvent();
-
       },
       () => {
         console.log("not permitted to receive notifications!");
       }
     );
+    this.enableNotificationEvents();
   }
 
 
@@ -145,7 +145,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
 
-  private enableNotificationEvent() {
+  private enableNotificationEvents() {
     if (this.eventsInitialized) {
       console.log('Events already initialized');
       return;
@@ -157,13 +157,16 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
 
-  private disableNotificationEvent() {
+  private disableNotificationEvents() {
     if (!this.eventsInitialized) {
       console.log('Events not initialized!');
       return;
     }
-    this.push.off('notification', this.onNotificationEvent);
-    this.push.off('error', this.onNotificationError);
+    this.push.off('registration', this.onRegistration.bind(this));
+    this.push.off('notification', this.onNotificationEvent.bind(this));
+    this.push.off('error', this.onNotificationError.bind(this));
+    console.log("Events disabled");
+    this.eventsInitialized = false;
   }
 
 
