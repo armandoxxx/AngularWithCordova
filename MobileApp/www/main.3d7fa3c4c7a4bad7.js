@@ -85,12 +85,15 @@ class AppComponent {
         this.eventsInitialized = false;
         this.subscribing = false;
         this.subscribedOnRegister = false;
-        this.hasNotifications = false;
+        this.topicSubscriptionInitTimer = undefined;
         this.disableSubscriptions = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+        this.registration = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+        this.registrationsSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+        this.afterRegistrationsEvent = this.registrationsSource.asObservable();
     }
     ngOnInit() {
-        this.initPush();
         this.initEvents();
+        this.initPush();
     }
     ngOnDestroy() {
         this.disableSubscriptions.next();
@@ -111,13 +114,13 @@ class AppComponent {
             }
         };
         this.push = PushNotification.init(config);
+        this.enableNotificationEvents();
         PushNotification.hasPermission(() => {
             console.log("Notification permission granted");
-            this.subscribeToTopic('user_topic');
+            //this.subscribeToTopic('user_topic'); //commented out to try and replace with registration observable.
         }, () => {
             console.log("not permitted to receive notifications!");
         });
-        this.enableNotificationEvents();
     }
     initEvents() {
         this.broadcastService.pushSubscriptionsEvent.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this.disableSubscriptions)).subscribe((subscriptionData) => {
@@ -128,6 +131,13 @@ class AppComponent {
             else if (subscriptionData.action == 'unsubscribe') {
                 this.unSubscribeFromTopic(subscriptionData.topicName);
             }
+        });
+        this.afterRegistrationsEvent.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this.disableSubscriptions)).subscribe(() => {
+            if (this.topicSubscriptionInitTimer != undefined) {
+                clearTimeout(this.topicSubscriptionInitTimer);
+            }
+            let me = this;
+            this.topicSubscriptionInitTimer = setTimeout(() => { me.subscribeToTopic('user_topic'); }, 2000);
         });
     }
     subscribeToTopic(topicName) {
@@ -174,6 +184,7 @@ class AppComponent {
     }
     onRegistration(data) {
         console.log("Got registration data: %o", data);
+        this.registrationsSource.next();
     }
     enableNotificationEvents() {
         if (this.eventsInitialized) {
@@ -743,4 +754,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.b5590c7fb4689d13.js.map
+//# sourceMappingURL=main.3d7fa3c4c7a4bad7.js.map
