@@ -64,9 +64,9 @@ export class AppComponent implements OnInit, OnDestroy {
           'registration',
           (data: any) => {
             console.log("Got registration data: %o", data);
-            console.log("will subscribe to topic: [user_topic]");
+            /*console.log("will subscribe to topic: [user_topic]");
             this.subscribeToTopic('user_topic');
-            this.enableNotificationEvent();
+            this.enableNotificationEvent();*/
           });
       },
       () => {
