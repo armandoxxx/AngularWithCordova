@@ -21,6 +21,7 @@ export class AppComponent implements OnInit, OnDestroy {
   //work flags
   private eventsInitialized: boolean = false;
   private subscribing: boolean = false;
+  private subscribedOnRegister: boolean = false;
   private hasNotifications: boolean = false;
 
 
@@ -61,8 +62,6 @@ export class AppComponent implements OnInit, OnDestroy {
     PushNotification.hasPermission(
       () => {
         console.log("Notification permission granted");
-        console.log("will subscribe to topic: [user_topic]");
-        this.subscribeToTopic('user_topic');
       },
       () => {
         console.log("not permitted to receive notifications!");
@@ -142,6 +141,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private onRegistration(data: any) {
     console.log("Got registration data: %o", data);
+    if (!this.subscribedOnRegister) {
+      console.log("will subscribe to topic: [user_topic]");
+      this.subscribeToTopic('user_topic');
+      this.subscribedOnRegister = true;
+    }
+
   }
 
 
@@ -167,6 +172,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.push.off('error', this.onNotificationError.bind(this));
     console.log("Events disabled");
     this.eventsInitialized = false;
+    this.subscribedOnRegister = false;
   }
 
 
