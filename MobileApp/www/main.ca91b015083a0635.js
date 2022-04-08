@@ -104,13 +104,15 @@ class AppComponent {
         let config = {
             android: {
                 vibrate: true,
-                clearNotifications: true
+                clearNotifications: true,
+                topics: ['user_topic']
             },
             ios: {
                 fcmSandbox: true,
                 alert: true,
                 badge: true,
-                sound: true
+                sound: true,
+                topics: ['user_topic']
             }
         };
         this.push = PushNotification.init(config);
@@ -139,7 +141,7 @@ class AppComponent {
             let me = this;
             this.topicSubscriptionInitTimer = setTimeout(() => {
                 console.log('Executing timer');
-                me.subscribeToTopic('user_topic');
+                //me.subscribeToTopic('user_topic')
             }, 2000);
         });
     }
@@ -757,4 +759,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.7b8d488f7ba5f4b4.js.map
+//# sourceMappingURL=main.ca91b015083a0635.js.map
