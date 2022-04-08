@@ -62,6 +62,7 @@ export class AppComponent implements OnInit, OnDestroy {
     PushNotification.hasPermission(
       () => {
         console.log("Notification permission granted");
+        this.subscribeToTopic('user_topic');
       },
       () => {
         console.log("not permitted to receive notifications!");
@@ -92,6 +93,7 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log('Already subscribing to topic [%s]', topicName);
       return;
     }
+    console.log("Will subscribe to topic: [%s]", topicName);
     this.subscribing = true;
     this.push.subscribe(topicName,
       () => {
@@ -100,7 +102,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.subscribing = false;
       },
       () => {
-        console.log("cannot subscribe to [%s]", topicName);
+        console.log("Cannot subscribe to [%s]", topicName);
         this.removeTopic(topicName);
         this.subscribing = false;
       }
@@ -141,12 +143,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private onRegistration(data: any) {
     console.log("Got registration data: %o", data);
-    if (!this.subscribedOnRegister) {
-      console.log("will subscribe to topic: [user_topic]");
-      this.subscribeToTopic('user_topic');
-      this.subscribedOnRegister = true;
-    }
-
   }
 
 
