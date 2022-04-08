@@ -149,8 +149,8 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log('Events already initialized');
       return;
     }
-    this.push.on('notification', this.onNotificationEvent);
-    this.push.on('error', this.onNotificationError);
+    this.push.on('notification', this.onNotificationEvent.bind(this));
+    this.push.on('error', this.onNotificationError.bind(this));
     this.eventsInitialized = true;
   }
 
