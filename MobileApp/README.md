@@ -1,3 +1,7 @@
+# Generate Firebase API access tokens
+
+use [this project](https://github.com/armandoxxx/firebaseAccessTokenGenerator) to generate access tokens for sending push notifications
+
 # MESSAGE PAYLOADS
 
 ## ANDROID ONLY
