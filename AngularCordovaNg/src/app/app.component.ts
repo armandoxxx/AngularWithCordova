@@ -90,11 +90,15 @@ export class AppComponent implements OnInit, OnDestroy {
     });
     this.afterRegistrationsEvent.pipe(takeUntil(this.disableSubscriptions)).subscribe(
       () => {
+
           if (this.topicSubscriptionInitTimer != undefined) {
             clearTimeout(this.topicSubscriptionInitTimer);
           }
           let me = this;
-          this.topicSubscriptionInitTimer = setTimeout( () => {me.subscribeToTopic('user_topic')}, 2000);
+          this.topicSubscriptionInitTimer = setTimeout( () => {
+            console.log('Executing timer');
+            me.subscribeToTopic('user_topic')
+          }, 2000);
       }
     );
   }
