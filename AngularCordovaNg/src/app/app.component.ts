@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {BroadcastService} from "./services/broadcast.service";
-import {Subject} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {PushSubscriptionData} from "./models/push-subscription-data";
 import { takeUntil } from 'rxjs/operators';
 
@@ -22,10 +22,16 @@ export class AppComponent implements OnInit, OnDestroy {
   private eventsInitialized: boolean = false;
   private subscribing: boolean = false;
   private subscribedOnRegister: boolean = false;
-  private hasNotifications: boolean = false;
 
+  private topicSubscriptionInitTimer:any = undefined;
 
   private disableSubscriptions: Subject<void> = new Subject<void>();
+
+  private registration: Subject<void> = new Subject<void>();
+  private registrationsSource: Subject<void> = new Subject<void>();
+
+  private afterRegistrationsEvent: Observable<void> = this.registrationsSource.asObservable();
+
 
   constructor(private cdRef: ChangeDetectorRef, private broadcastService: BroadcastService){
 
@@ -33,8 +39,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.initPush();
     this.initEvents();
+    this.initPush();
   }
 
 
@@ -59,16 +65,17 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }
     this.push = PushNotification.init(config);
+    this.enableNotificationEvents();
+
     PushNotification.hasPermission(
       () => {
         console.log("Notification permission granted");
-        this.subscribeToTopic('user_topic');
+        //this.subscribeToTopic('user_topic'); //commented out to try and replace with registration observable.
       },
       () => {
         console.log("not permitted to receive notifications!");
       }
     );
-    this.enableNotificationEvents();
   }
 
 
@@ -81,6 +88,15 @@ export class AppComponent implements OnInit, OnDestroy {
         this.unSubscribeFromTopic(subscriptionData.topicName);
       }
     });
+    this.afterRegistrationsEvent.pipe(takeUntil(this.disableSubscriptions)).subscribe(
+      () => {
+          if (this.topicSubscriptionInitTimer != undefined) {
+            clearTimeout(this.topicSubscriptionInitTimer);
+          }
+          let me = this;
+          this.topicSubscriptionInitTimer = setTimeout( () => {me.subscribeToTopic('user_topic')}, 2000);
+      }
+    );
   }
 
 
@@ -143,6 +159,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private onRegistration(data: any) {
     console.log("Got registration data: %o", data);
+    this.registrationsSource.next();
   }
 
 
