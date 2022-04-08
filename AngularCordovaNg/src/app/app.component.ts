@@ -13,7 +13,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   title = 'AngularCordovaNg';
   subscribedTopics: string[] = [];
-
+  data: string = '';
+  currentTime: Date = new Date();
 
   private push: any = undefined;
 
@@ -132,6 +133,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private onNotificationEvent(data: any) {
     console.log("Got notification data: %o", data);
+    this.data = JSON.stringify(data);
+    this.currentTime = new Date();
+    this.cdRef.detectChanges();
   }
 
 

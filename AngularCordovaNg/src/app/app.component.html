@@ -14,4 +14,6 @@ Subscribed topics:
 <ng-container *ngFor="let topicName of subscribedTopics">
   <li>{{topicName}}</li>
 </ng-container>
+
+Notification data: {{currentTime | date: 'dd.MM.yyyy hh:mm:ss'}} - {{data}}
 </ul>
