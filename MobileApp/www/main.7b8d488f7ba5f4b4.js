@@ -137,7 +137,10 @@ class AppComponent {
                 clearTimeout(this.topicSubscriptionInitTimer);
             }
             let me = this;
-            this.topicSubscriptionInitTimer = setTimeout(() => { me.subscribeToTopic('user_topic'); }, 2000);
+            this.topicSubscriptionInitTimer = setTimeout(() => {
+                console.log('Executing timer');
+                me.subscribeToTopic('user_topic');
+            }, 2000);
         });
     }
     subscribeToTopic(topicName) {
@@ -754,4 +757,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.3d7fa3c4c7a4bad7.js.map
+//# sourceMappingURL=main.7b8d488f7ba5f4b4.js.map
