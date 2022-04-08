@@ -14,8 +14,12 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'AngularCordovaNg';
   subscribedTopics: string[] = [];
 
+
   private push: any = undefined;
+
+  //work flags
   private eventsInitialized: boolean = false;
+  private subscribing: boolean = false;
 
 
   private disableSubscriptions: Subject<void> = new Subject<void>();
@@ -72,7 +76,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
   initEvents() {
-    this.broadcastService.pushSubscriptionsEvent.pipe(takeUntil(this.disableSubscriptions)).subscribe( (subscriptionData:PushSubscriptionData) => {
+    this.broadcastService.pushSubscriptionsEvent.pipe(takeUntil(this.disableSubscriptions)).subscribe( (subscriptionData: PushSubscriptionData) => {
+      console.log('Got subscription event data [%o]', subscriptionData);
       if (subscriptionData.action == 'subscribe') {
         this.subscribeToTopic(subscriptionData.topicName);
       } else if (subscriptionData.action == 'unsubscribe') {
@@ -87,14 +92,21 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log('Already subscribed to topic [%s]', topicName);
       return;
     }
+    if (this.subscribing) {
+      console.log('Already subscribing to topic [%s]', topicName);
+      return;
+    }
+    this.subscribing = true;
     this.push.subscribe(topicName,
       () => {
         console.log('Subscribed to [%s]', topicName);
         this.addTopic(topicName);
+        this.subscribing = false;
       },
       () => {
         console.log("cannot subscribe to [%s]", topicName);
         this.removeTopic(topicName);
+        this.subscribing = false;
       }
     );
   }

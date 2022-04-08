@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Observable, Subject} from "rxjs";
 import {PushSubscriptionData} from "../models/push-subscription-data";
-import {Article} from "../models/article";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +9,8 @@ export class BroadcastService {
 
   private pushSubscriptionsSource = new Subject<PushSubscriptionData>();
 
-  pushSubscriptionsEvent = this.pushSubscriptionsSource.asObservable();
+  public pushSubscriptionsEvent: Observable<PushSubscriptionData> = this.pushSubscriptionsSource.asObservable();
+
 
   constructor() { }
 
@@ -31,9 +31,8 @@ export class BroadcastService {
     this.pushSubscriptionsSource.next(data);
   }
 
-  /*isTopicSubscribed(topicName: string): Observable<Article[]> {
-    //return true;
-  }*/
+
+
 
 }
 
