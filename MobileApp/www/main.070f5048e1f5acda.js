@@ -84,6 +84,7 @@ class AppComponent {
         //work flags
         this.eventsInitialized = false;
         this.subscribing = false;
+        this.subscribedOnRegister = false;
         this.hasNotifications = false;
         this.disableSubscriptions = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
     }
@@ -112,8 +113,6 @@ class AppComponent {
         this.push = PushNotification.init(config);
         PushNotification.hasPermission(() => {
             console.log("Notification permission granted");
-            console.log("will subscribe to topic: [user_topic]");
-            this.subscribeToTopic('user_topic');
         }, () => {
             console.log("not permitted to receive notifications!");
         });
@@ -173,6 +172,11 @@ class AppComponent {
     }
     onRegistration(data) {
         console.log("Got registration data: %o", data);
+        if (!this.subscribedOnRegister) {
+            console.log("will subscribe to topic: [user_topic]");
+            this.subscribeToTopic('user_topic');
+            this.subscribedOnRegister = true;
+        }
     }
     enableNotificationEvents() {
         if (this.eventsInitialized) {
@@ -194,6 +198,7 @@ class AppComponent {
         this.push.off('error', this.onNotificationError.bind(this));
         console.log("Events disabled");
         this.eventsInitialized = false;
+        this.subscribedOnRegister = false;
     }
     addTopic(topicName) {
         this.subscribedTopics.push(topicName);
@@ -741,4 +746,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.563861bf336e3d63.js.map
+//# sourceMappingURL=main.070f5048e1f5acda.js.map
