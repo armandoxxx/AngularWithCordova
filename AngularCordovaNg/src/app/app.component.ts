@@ -59,15 +59,11 @@ export class AppComponent implements OnInit, OnDestroy {
     this.push = PushNotification.init(config);
     PushNotification.hasPermission(
       () => {
-      console.log("Notification permission granted");
-        this.push.on(
-          'registration',
-          (data: any) => {
-            console.log("Got registration data: %o", data);
-            /*console.log("will subscribe to topic: [user_topic]");
-            this.subscribeToTopic('user_topic');
-            this.enableNotificationEvent();*/
-          });
+        console.log("Notification permission granted");
+        console.log("will subscribe to topic: [user_topic]");
+        this.subscribeToTopic('user_topic');
+        this.enableNotificationEvent();
+
       },
       () => {
         console.log("not permitted to receive notifications!");
@@ -144,11 +140,17 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
 
+  private onRegistration(data: any) {
+    console.log("Got registration data: %o", data);
+  }
+
+
   private enableNotificationEvent() {
     if (this.eventsInitialized) {
       console.log('Events already initialized');
       return;
     }
+    this.push.on('registration', this.onRegistration.bind(this));
     this.push.on('notification', this.onNotificationEvent.bind(this));
     this.push.on('error', this.onNotificationError.bind(this));
     this.eventsInitialized = true;
