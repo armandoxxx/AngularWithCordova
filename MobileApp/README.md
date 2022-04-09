@@ -14,7 +14,7 @@ https://fcm.googleapis.com/v1/projects/{{your_FCM_project_ID}}/messages:send
 Note: if you want to open the app and get the event:    
 - **"click_action": "com.adobe.phonegap.push.background.MESSAGING_EVENT"**    
 is needed on android.    
-- **"force-start": "1"** is needed when app is closed and not running in background. Otherwise you your app wont open if you click on it in notification.    
+- **"force-start": "1"** is needed when app is closed and not running in background. Otherwise you your app wont open if you click on notification.    
 - **"count":"5"** shows badge number
 
 ```
