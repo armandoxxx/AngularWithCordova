@@ -1,6 +1,6 @@
 # Generate Firebase API access tokens
 
-use [this project](https://github.com/armandoxxx/firebaseAccessTokenGenerator) to generate access tokens for sending push notifications
+use [this project](https://github.com/armandoxxx/firebaseAccessTokenGenerator) to generate access tokens for sending push notifications with FCM v1.    
 
 # MESSAGE PAYLOADS
 
