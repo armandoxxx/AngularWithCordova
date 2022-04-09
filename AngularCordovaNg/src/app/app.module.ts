@@ -13,6 +13,7 @@ import {MatDividerModule} from "@angular/material/divider";
 import {HttpClientModule} from "@angular/common/http";
 import { LayoutComponent } from './pages/layout/layout.component';
 import {BroadcastService} from "./services/broadcast.service";
+import {NotificationService} from "./services/notification.service";
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import {BroadcastService} from "./services/broadcast.service";
     MatDividerModule,
   ],
   providers: [
-    BroadcastService
+    BroadcastService,
+    NotificationService
   ],
   bootstrap: [AppComponent]
 })
