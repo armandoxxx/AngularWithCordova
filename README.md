@@ -3,7 +3,7 @@ this is a test PWA with:
  - angular
  - angular-material
  - cordova
- - cordova plugins (cordova-plugin-camera, @havesource/cordova-plugin-push).    
+ - cordova plugins (cordova-plugin-camera, [@havesource/cordova-plugin-push](https://github.com/havesource/cordova-plugin-push)).    
  
 Testing PWA without ionic and other mainly mobile frameworks. Just Angular and Angular material as UI lib, to check if mobile and web app can have same codebase without any major hustle.   
 
