@@ -47,10 +47,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AppComponent": () => (/* binding */ AppComponent)
 /* harmony export */ });
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ 228);
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ 8951);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ 3184);
 /* harmony import */ var _services_broadcast_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./services/broadcast.service */ 2544);
+/* harmony import */ var _services_notification_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./services/notification.service */ 2013);
 /* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/material/button */ 7317);
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/router */ 2816);
 /* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ 6362);
@@ -62,208 +62,81 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function AppComponent_ng_container_17_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "li");
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementContainerEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](1, "li");
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementContainerEnd"]();
 } if (rf & 2) {
     const topicName_r1 = ctx.$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate"](topicName_r1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtextInterpolate"](topicName_r1);
 } }
 class AppComponent {
-    constructor(cdRef, broadcastService) {
+    constructor(cdRef, broadcastService, notificationService) {
         this.cdRef = cdRef;
         this.broadcastService = broadcastService;
+        this.notificationService = notificationService;
         this.title = 'AngularCordovaNg';
         this.subscribedTopics = [];
         this.data = '';
         this.currentTime = new Date();
-        this.push = undefined;
-        //work flags
-        this.eventsInitialized = false;
-        this.subscribing = false;
-        this.subscribedOnRegister = false;
-        this.topicSubscriptionInitTimer = undefined;
-        this.disableSubscriptions = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
-        this.registration = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
-        this.registrationsSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
-        this.afterRegistrationsEvent = this.registrationsSource.asObservable();
+        this.disableSubscriptions = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
     }
     ngOnInit() {
+        this.notificationService.initPush();
         this.initEvents();
-        this.initPush();
     }
     ngOnDestroy() {
         this.disableSubscriptions.next();
-        this.disableNotificationEvents();
-    }
-    initPush() {
-        console.log('Initializing push plugin.');
-        let config = {
-            android: {
-                vibrate: true,
-                clearNotifications: true
-            },
-            ios: {
-                fcmSandbox: true,
-                alert: true,
-                badge: true,
-                sound: true
-            }
-        };
-        this.push = PushNotification.init(config);
-        this.enableNotificationEvents();
-        PushNotification.hasPermission(() => {
-            console.log("Notification permission granted");
-            //this.subscribeToTopic('user_topic'); //commented out to try and replace with registration observable.
-        }, () => {
-            console.log("not permitted to receive notifications!");
-        });
     }
     initEvents() {
-        this.broadcastService.pushSubscriptionsEvent.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this.disableSubscriptions)).subscribe((subscriptionData) => {
-            console.log('Got subscription event data [%o]', subscriptionData);
-            if (subscriptionData.action == 'subscribe') {
-                this.subscribeToTopic(subscriptionData.topicName);
-            }
-            else if (subscriptionData.action == 'unsubscribe') {
-                this.unSubscribeFromTopic(subscriptionData.topicName);
-            }
-        });
-        this.afterRegistrationsEvent.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this.disableSubscriptions)).subscribe(() => {
-            if (this.topicSubscriptionInitTimer != undefined) {
-                clearTimeout(this.topicSubscriptionInitTimer);
-            }
-            let me = this;
-            this.topicSubscriptionInitTimer = setTimeout(() => {
-                console.log('Executing timer');
-                me.subscribeToTopic('user_topic');
-            }, 2000);
-        });
+        this.notificationService.onNotify.subscribe(this.handlePushNotification.bind(this));
     }
-    subscribeToTopic(topicName) {
-        if (this.subscribedTopics.indexOf(topicName) !== -1) {
-            console.log('Already subscribed to topic [%s]', topicName);
-            return;
-        }
-        if (this.subscribing) {
-            console.log('Already subscribing to topic [%s]', topicName);
-            return;
-        }
-        console.log("Will subscribe to topic: [%s]", topicName);
-        this.subscribing = true;
-        this.push.subscribe(topicName, () => {
-            console.log('Subscribed to [%s]', topicName);
-            this.addTopic(topicName);
-            this.subscribing = false;
-        }, () => {
-            console.log("Cannot subscribe to [%s]", topicName);
-            this.removeTopic(topicName);
-            this.subscribing = false;
-        });
-    }
-    unSubscribeFromTopic(topicName) {
-        if (this.subscribedTopics.indexOf(topicName) === -1) {
-            console.log('Not subscribed to topic [%s]', topicName);
-            return;
-        }
-        this.push.unsubscribe(topicName, () => {
-            console.log('Successfully unsubscribed from topic [%s]', topicName);
-            this.removeTopic(topicName);
-        }, (e) => {
-            console.log('Cannot unsubscribe from topic [%s] error [%o]', topicName, e);
-        });
-    }
-    onNotificationEvent(data) {
-        console.log("Got notification data: %o", data);
+    handlePushNotification(data) {
         this.data = JSON.stringify(data);
         this.currentTime = new Date();
         this.cdRef.detectChanges();
     }
-    onNotificationError(data) {
-        console.log("Got notification error data: %o", data);
-    }
-    onRegistration(data) {
-        console.log("Got registration data: %o", data);
-        this.registrationsSource.next();
-    }
-    enableNotificationEvents() {
-        if (this.eventsInitialized) {
-            console.log('Events already initialized');
-            return;
-        }
-        this.push.on('registration', this.onRegistration.bind(this));
-        this.push.on('notification', this.onNotificationEvent.bind(this));
-        this.push.on('error', this.onNotificationError.bind(this));
-        this.eventsInitialized = true;
-    }
-    disableNotificationEvents() {
-        if (!this.eventsInitialized) {
-            console.log('Events not initialized!');
-            return;
-        }
-        this.push.off('registration', this.onRegistration.bind(this));
-        this.push.off('notification', this.onNotificationEvent.bind(this));
-        this.push.off('error', this.onNotificationError.bind(this));
-        console.log("Events disabled");
-        this.eventsInitialized = false;
-        this.subscribedOnRegister = false;
-    }
-    addTopic(topicName) {
-        this.subscribedTopics.push(topicName);
-        console.log('added topic [%s]', topicName);
-        this.cdRef.detectChanges();
-    }
-    removeTopic(topicName) {
-        if (this.subscribedTopics.indexOf(topicName) !== -1) {
-            this.subscribedTopics.splice(this.subscribedTopics.indexOf(topicName), 1);
-            console.log('removed topic [%s]', topicName);
-        }
-        this.cdRef.detectChanges();
-    }
-    isTopicSubscribed(topicName) {
-    }
 }
-AppComponent.ɵfac = function AppComponent_Factory(t) { return new (t || AppComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_1__.ChangeDetectorRef), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_services_broadcast_service__WEBPACK_IMPORTED_MODULE_0__.BroadcastService)); };
-AppComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: AppComponent, selectors: [["app-root"]], decls: 20, vars: 6, consts: [["mat-button", "", "routerLink", "/camera", "routerLinkActive", "active"], ["mat-button", "", "routerLink", "/data", "routerLinkActive", "active"], ["mat-button", "", "routerLink", "/notify", "routerLinkActive", "active"], [1, "pages"], [4, "ngFor", "ngForOf"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "h2");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, "Test angular cordova application");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "nav");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "ul");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](4, "li");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "a", 0);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](6, "Camera");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "li");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](8, "a", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](9, "Data");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "li");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](11, "a", 2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](12, "Notifications");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](13, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](14, "router-outlet");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](15, "\nSubscribed topics:\n");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](16, "ul");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](17, AppComponent_ng_container_17_Template, 3, 1, "ng-container", 4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](18);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipe"](19, "date");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+AppComponent.ɵfac = function AppComponent_Factory(t) { return new (t || AppComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_2__.ChangeDetectorRef), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_services_broadcast_service__WEBPACK_IMPORTED_MODULE_0__.BroadcastService), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_services_notification_service__WEBPACK_IMPORTED_MODULE_1__.NotificationService)); };
+AppComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineComponent"]({ type: AppComponent, selectors: [["app-root"]], decls: 20, vars: 6, consts: [["mat-button", "", "routerLink", "/camera", "routerLinkActive", "active"], ["mat-button", "", "routerLink", "/data", "routerLinkActive", "active"], ["mat-button", "", "routerLink", "/notify", "routerLinkActive", "active"], [1, "pages"], [4, "ngFor", "ngForOf"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](0, "h2");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](1, "Test angular cordova application");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](2, "nav");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](3, "ul");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](4, "li");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](5, "a", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](6, "Camera");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](7, "li");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](8, "a", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](9, "Data");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](10, "li");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](11, "a", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](12, "Notifications");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](13, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelement"](14, "router-outlet");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](15, "\nSubscribed topics:\n");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](16, "ul");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtemplate"](17, AppComponent_ng_container_17_Template, 3, 1, "ng-container", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](18);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵpipe"](19, "date");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
     } if (rf & 2) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](17);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngForOf", ctx.subscribedTopics);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtextInterpolate2"](" Notification data: ", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵpipeBind2"](19, 3, ctx.currentTime, "dd.MM.yyyy hh:mm:ss"), " - ", ctx.data, "\n");
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](17);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵproperty"]("ngForOf", ctx.subscribedTopics);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtextInterpolate2"](" Notification data: ", _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵpipeBind2"](19, 3, ctx.currentTime, "dd.MM.yyyy hh:mm:ss"), " - ", ctx.data, "\n");
     } }, directives: [_angular_material_button__WEBPACK_IMPORTED_MODULE_4__.MatAnchor, _angular_router__WEBPACK_IMPORTED_MODULE_5__.RouterLinkWithHref, _angular_router__WEBPACK_IMPORTED_MODULE_5__.RouterLinkActive, _angular_router__WEBPACK_IMPORTED_MODULE_5__.RouterOutlet, _angular_common__WEBPACK_IMPORTED_MODULE_6__.NgForOf], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_6__.DatePipe], styles: ["nav[_ngcontent-%COMP%] {\n  clear: both;\n  display: block;\n}\nnav[_ngcontent-%COMP%]   ul[_ngcontent-%COMP%] {\n  list-style-type: none;\n}\nnav[_ngcontent-%COMP%]   ul[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  float: left;\n  display: inline-block;\n}\n.pages[_ngcontent-%COMP%] {\n  clear: both;\n  display: block;\n}\n.hide[_ngcontent-%COMP%] {\n  display: none;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLFdBQUE7RUFDQSxjQUFBO0FBQ0Y7QUFBRTtFQUNFLHFCQUFBO0FBRUo7QUFBSTtFQUNFLFdBQUE7RUFDQSxxQkFBQTtBQUVOO0FBR0E7RUFDRSxXQUFBO0VBQ0EsY0FBQTtBQUFGO0FBSUE7RUFDRSxhQUFBO0FBREYiLCJmaWxlIjoiYXBwLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsibmF2IHtcbiAgY2xlYXI6IGJvdGg7XG4gIGRpc3BsYXk6IGJsb2NrO1xuICB1bHtcbiAgICBsaXN0LXN0eWxlLXR5cGU6IG5vbmU7XG5cbiAgICBsaSB7XG4gICAgICBmbG9hdDpsZWZ0O1xuICAgICAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xuICAgIH1cbiAgfVxufVxuXG4ucGFnZXMge1xuICBjbGVhcjogYm90aDtcbiAgZGlzcGxheTogYmxvY2s7XG59XG5cblxuLmhpZGUge1xuICBkaXNwbGF5OiBub25lO1xufVxuIl19 */"] });
 
 
@@ -279,20 +152,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AppModule": () => (/* binding */ AppModule)
 /* harmony export */ });
-/* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/platform-browser */ 318);
+/* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/platform-browser */ 318);
 /* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./app-routing.module */ 158);
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./app.component */ 5041);
-/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/platform-browser/animations */ 3598);
-/* harmony import */ var _angular_material_card__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @angular/material/card */ 1961);
-/* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @angular/material/button */ 7317);
+/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @angular/platform-browser/animations */ 3598);
+/* harmony import */ var _angular_material_card__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @angular/material/card */ 1961);
+/* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @angular/material/button */ 7317);
 /* harmony import */ var _pages_camera_camera_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./pages/camera/camera.component */ 9236);
 /* harmony import */ var _pages_data_data_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./pages/data/data.component */ 9917);
 /* harmony import */ var _pages_notify_notify_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./pages/notify/notify.component */ 6168);
-/* harmony import */ var _angular_material_divider__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @angular/material/divider */ 9975);
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/common/http */ 8784);
+/* harmony import */ var _angular_material_divider__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @angular/material/divider */ 9975);
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/common/http */ 8784);
 /* harmony import */ var _pages_layout_layout_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./pages/layout/layout.component */ 7703);
 /* harmony import */ var _services_broadcast_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./services/broadcast.service */ 2544);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _services_notification_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./services/notification.service */ 2013);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/core */ 3184);
+
 
 
 
@@ -310,29 +185,30 @@ __webpack_require__.r(__webpack_exports__);
 class AppModule {
 }
 AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
-AppModule.ɵmod = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_7__["ɵɵdefineNgModule"]({ type: AppModule, bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_1__.AppComponent] });
-AppModule.ɵinj = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_7__["ɵɵdefineInjector"]({ providers: [
-        _services_broadcast_service__WEBPACK_IMPORTED_MODULE_6__.BroadcastService
+AppModule.ɵmod = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_8__["ɵɵdefineNgModule"]({ type: AppModule, bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_1__.AppComponent] });
+AppModule.ɵinj = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_8__["ɵɵdefineInjector"]({ providers: [
+        _services_broadcast_service__WEBPACK_IMPORTED_MODULE_6__.BroadcastService,
+        _services_notification_service__WEBPACK_IMPORTED_MODULE_7__.NotificationService
     ], imports: [[
-            _angular_common_http__WEBPACK_IMPORTED_MODULE_8__.HttpClientModule,
-            _angular_platform_browser__WEBPACK_IMPORTED_MODULE_9__.BrowserModule,
+            _angular_common_http__WEBPACK_IMPORTED_MODULE_9__.HttpClientModule,
+            _angular_platform_browser__WEBPACK_IMPORTED_MODULE_10__.BrowserModule,
             _app_routing_module__WEBPACK_IMPORTED_MODULE_0__.AppRoutingModule,
-            _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_10__.BrowserAnimationsModule,
-            _angular_material_card__WEBPACK_IMPORTED_MODULE_11__.MatCardModule,
-            _angular_material_button__WEBPACK_IMPORTED_MODULE_12__.MatButtonModule,
-            _angular_material_divider__WEBPACK_IMPORTED_MODULE_13__.MatDividerModule,
+            _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_11__.BrowserAnimationsModule,
+            _angular_material_card__WEBPACK_IMPORTED_MODULE_12__.MatCardModule,
+            _angular_material_button__WEBPACK_IMPORTED_MODULE_13__.MatButtonModule,
+            _angular_material_divider__WEBPACK_IMPORTED_MODULE_14__.MatDividerModule,
         ]] });
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_7__["ɵɵsetNgModuleScope"](AppModule, { declarations: [_app_component__WEBPACK_IMPORTED_MODULE_1__.AppComponent,
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_8__["ɵɵsetNgModuleScope"](AppModule, { declarations: [_app_component__WEBPACK_IMPORTED_MODULE_1__.AppComponent,
         _pages_camera_camera_component__WEBPACK_IMPORTED_MODULE_2__.CameraComponent,
         _pages_data_data_component__WEBPACK_IMPORTED_MODULE_3__.DataComponent,
         _pages_notify_notify_component__WEBPACK_IMPORTED_MODULE_4__.NotifyComponent,
-        _pages_layout_layout_component__WEBPACK_IMPORTED_MODULE_5__.LayoutComponent], imports: [_angular_common_http__WEBPACK_IMPORTED_MODULE_8__.HttpClientModule,
-        _angular_platform_browser__WEBPACK_IMPORTED_MODULE_9__.BrowserModule,
+        _pages_layout_layout_component__WEBPACK_IMPORTED_MODULE_5__.LayoutComponent], imports: [_angular_common_http__WEBPACK_IMPORTED_MODULE_9__.HttpClientModule,
+        _angular_platform_browser__WEBPACK_IMPORTED_MODULE_10__.BrowserModule,
         _app_routing_module__WEBPACK_IMPORTED_MODULE_0__.AppRoutingModule,
-        _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_10__.BrowserAnimationsModule,
-        _angular_material_card__WEBPACK_IMPORTED_MODULE_11__.MatCardModule,
-        _angular_material_button__WEBPACK_IMPORTED_MODULE_12__.MatButtonModule,
-        _angular_material_divider__WEBPACK_IMPORTED_MODULE_13__.MatDividerModule] }); })();
+        _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_11__.BrowserAnimationsModule,
+        _angular_material_card__WEBPACK_IMPORTED_MODULE_12__.MatCardModule,
+        _angular_material_button__WEBPACK_IMPORTED_MODULE_13__.MatButtonModule,
+        _angular_material_divider__WEBPACK_IMPORTED_MODULE_14__.MatDividerModule] }); })();
 
 
 /***/ }),
@@ -700,6 +576,164 @@ BroadcastService.ɵprov = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_1
 
 /***/ }),
 
+/***/ 2013:
+/*!**************************************************!*\
+  !*** ./src/app/services/notification.service.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "NotificationService": () => (/* binding */ NotificationService)
+/* harmony export */ });
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ 8951);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ 3184);
+
+
+
+class NotificationService {
+    constructor() {
+        this.disableSubscriptions = new rxjs__WEBPACK_IMPORTED_MODULE_0__.Subject();
+        this.registrationsSource = new rxjs__WEBPACK_IMPORTED_MODULE_0__.Subject();
+        this.notifySource = new rxjs__WEBPACK_IMPORTED_MODULE_0__.Subject();
+        this.afterRegistrationsEvent = this.registrationsSource.asObservable();
+        this.push = undefined;
+        this.subscribedTopics = [];
+        this.topicSubscriptionInitTimer = undefined;
+        //work flags
+        this.pushInitialized = false;
+        this.subscribing = false;
+        this.eventsInitialized = false;
+        //public members
+        this.onNotify = this.notifySource.asObservable();
+    }
+    ngOnDestroy() {
+        this.disableSubscriptions.next();
+    }
+    initPush() {
+        if (this.pushInitialized) {
+            console.log('Push plugin initialized.');
+            return;
+        }
+        console.log('Initializing push plugin.');
+        let config = {
+            android: {
+                vibrate: true,
+                clearNotifications: true
+            },
+            ios: {
+                fcmSandbox: true,
+                alert: true,
+                badge: true,
+                sound: true
+            }
+        };
+        this.push = PushNotification.init(config);
+        this.enableNotificationEvents();
+        PushNotification.hasPermission(() => {
+            console.log("Notification permission granted");
+            //this.subscribeToTopic('user_topic'); //commented out to try and replace with registration observable.
+        }, () => {
+            console.log("not permitted to receive notifications!");
+        });
+        this.initEvents();
+        this.pushInitialized = true;
+    }
+    initEvents() {
+        this.afterRegistrationsEvent.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.takeUntil)(this.disableSubscriptions)).subscribe(() => {
+            if (this.topicSubscriptionInitTimer != undefined) {
+                clearTimeout(this.topicSubscriptionInitTimer);
+            }
+            let me = this;
+            this.topicSubscriptionInitTimer = setTimeout(() => {
+                console.log('Executing timer');
+                me.subscribeToTopic('user_topic');
+            }, 2000);
+        });
+    }
+    subscribeToTopic(topicName) {
+        if (this.subscribedTopics.indexOf(topicName) !== -1) {
+            console.log('Already subscribed to topic [%s]', topicName);
+            return;
+        }
+        if (this.subscribing) {
+            console.log('Already subscribing to topic [%s]', topicName);
+            return;
+        }
+        console.log("Will subscribe to topic: [%s]", topicName);
+        this.subscribing = true;
+        this.push.subscribe(topicName, () => {
+            console.log('Subscribed to [%s]', topicName);
+            this.addTopic(topicName);
+            this.subscribing = false;
+        }, () => {
+            console.log("Cannot subscribe to [%s]", topicName);
+            this.removeTopic(topicName);
+            this.subscribing = false;
+        });
+    }
+    unSubscribeFromTopic(topicName) {
+        if (this.subscribedTopics.indexOf(topicName) === -1) {
+            console.log('Not subscribed to topic [%s]', topicName);
+            return;
+        }
+        this.push.unsubscribe(topicName, () => {
+            console.log('Successfully unsubscribed from topic [%s]', topicName);
+            this.removeTopic(topicName);
+        }, (e) => {
+            console.log('Cannot unsubscribe from topic [%s] error [%o]', topicName, e);
+        });
+    }
+    onNotificationEvent(data) {
+        console.log("Got notification data: %o", data);
+        this.notifySource.next(data);
+    }
+    onNotificationError(data) {
+        console.log("Got notification error data: %o", data);
+    }
+    onRegistration(data) {
+        console.log("Got registration data: %o", data);
+        this.registrationsSource.next();
+    }
+    enableNotificationEvents() {
+        if (this.eventsInitialized) {
+            console.log('Events already initialized');
+            return;
+        }
+        this.push.on('registration', this.onRegistration.bind(this));
+        this.push.on('notification', this.onNotificationEvent.bind(this));
+        this.push.on('error', this.onNotificationError.bind(this));
+        this.eventsInitialized = true;
+    }
+    disableNotificationEvents() {
+        if (!this.eventsInitialized) {
+            console.log('Events not initialized!');
+            return;
+        }
+        this.push.off('registration', this.onRegistration.bind(this));
+        this.push.off('notification', this.onNotificationEvent.bind(this));
+        this.push.off('error', this.onNotificationError.bind(this));
+        console.log("Events disabled");
+        this.eventsInitialized = false;
+    }
+    addTopic(topicName) {
+        this.subscribedTopics.push(topicName);
+        console.log('added topic [%s]', topicName);
+    }
+    removeTopic(topicName) {
+        if (this.subscribedTopics.indexOf(topicName) !== -1) {
+            this.subscribedTopics.splice(this.subscribedTopics.indexOf(topicName), 1);
+            console.log('removed topic [%s]', topicName);
+        }
+    }
+}
+NotificationService.ɵfac = function NotificationService_Factory(t) { return new (t || NotificationService)(); };
+NotificationService.ɵprov = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineInjectable"]({ token: NotificationService, factory: NotificationService.ɵfac, providedIn: 'root' });
+
+
+/***/ }),
+
 /***/ 2340:
 /*!*****************************************!*\
   !*** ./src/environments/environment.ts ***!
@@ -757,4 +791,4 @@ else {
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);
-//# sourceMappingURL=main.7b8d488f7ba5f4b4.js.map
+//# sourceMappingURL=main.cd33dff681d9296d.js.map
