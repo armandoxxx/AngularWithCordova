@@ -6,24 +6,26 @@ use [this project](https://github.com/armandoxxx/firebaseAccessTokenGenerator) t
 
 ## ANDROID ONLY
 
-https://fcm.googleapis.com/v1/projects/{{your FCM project ID}}/messages:send
+This message will show badge count and on click open app with event data received.
+
+FCM end point:     
+https://fcm.googleapis.com/v1/projects/{{your_FCM_project_ID}}/messages:send
 
 Note: if you want to open the app and get the event:    
 **"click_action": "com.adobe.phonegap.push.background.MESSAGING_EVENT"**    
-is needed on android
+is needed on android.
 
 ```
-{
+{   
     "message": {
         "topic":"user_topic",
         "android": {
-            "notification":  {
-                "title": "title Android",
-                "body": "body andorid",
-                "click_action": "com.adobe.phonegap.push.background.MESSAGING_EVENT"
-            },
             "data": {
-               "article": "android article"
+               "title": "title Android x",
+               "body": "body andorid x",
+               "article": "android article x",
+               "count": "5",
+               "click_action": "com.adobe.phonegap.push.background.MESSAGING_EVENT",
             }
         }
     }
@@ -32,7 +34,8 @@ is needed on android
 
 ## IOS ONLY
 
-https://fcm.googleapis.com/v1/projects/{{your FCM project ID}}/messages:send
+FCM end point:     
+https://fcm.googleapis.com/v1/projects/{{your_FCM_project_ID}}/messages:send
 
 ```
 {
@@ -62,10 +65,11 @@ https://fcm.googleapis.com/v1/projects/{{your FCM project ID}}/messages:send
 
 ## BOTH
 
-https://fcm.googleapis.com/v1/projects/{{your FCM project ID}}/messages:send
+FCM end point:     
+https://fcm.googleapis.com/v1/projects/{{your_FCM_project_ID}}/messages:send
 
 ```
-{
+{   
     "message": {
         "topic":"user_topic",
          "notification": {
@@ -73,10 +77,12 @@ https://fcm.googleapis.com/v1/projects/{{your FCM project ID}}/messages:send
             "body": "body generic"
         },
         "android": {
-            "notification": {
-                "title": "title Android",
-                "body": "body andorid",
-                "click_action": "com.adobe.phonegap.push.background.MESSAGING_EVENT"
+            "data": {
+               "title": "title Android x",
+               "body": "body andorid x",
+               "article": "android article x",
+               "count": "5",
+               "click_action": "com.adobe.phonegap.push.background.MESSAGING_EVENT",
             }
         },
         "apns": {
@@ -92,7 +98,7 @@ https://fcm.googleapis.com/v1/projects/{{your FCM project ID}}/messages:send
         },
         "data": {
             "article": "some article XYZ "
-        }
+        }   
     }
 }
 ```
