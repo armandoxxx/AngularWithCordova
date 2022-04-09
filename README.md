@@ -28,15 +28,16 @@ cordova run browser
 run **cordova platforms add ios**
 run **cordova prepare ios**
 
-do not forget to set settings in XCode for signing dev app (select team and enter bundle identifier-you have to create in your account  in developer.apple.com)    
+Open project in XCode in platform/ios/ folder 
+do not forget to select development team in XCode    
   
 run **cordova build ios**
 
 ###troubleshooting 
 
-if you run into problem with blank page when app is loaded then do this (usualy access-allow-origin stuff)   
+if you run into problem with blank page when app is loaded then do this (usualy Access-allow-origin stuff problems)   
 
-Search the code for the following line: (might be in several files, so do it for all of them)
+Search the code in workspace for the following line: (might be in several files, so do it for all of them)
 ```
  WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
 ```
@@ -45,7 +46,7 @@ And add the following two lines after it:
 [configuration.preferences setValue:@TRUE forKey:@"allowFileAccessFromFileURLs"];
 [configuration setValue:@"TRUE" forKey:@"allowUniversalAccessFromFileURLs"];
 ```
+(still figuring out how to do this with configs ...)
 
-If you run into the proble of **doc.find is not a function** when building IOS goto **platform/ios/** and open **ios.json**.   
-remove "-info.plist" key from json file, store it and try again. 
+If you run into the problem of **doc.find is not a function** when building IOS app goto **platform/ios/** and open **ios.json** file. Remove "-info.plist" key from json file, store it and try again. 
 
